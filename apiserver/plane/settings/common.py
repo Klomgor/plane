@@ -262,6 +262,9 @@ CELERY_IMPORTS = (
     "plane.license.bgtasks.tracer",
     # management tasks
     "plane.bgtasks.dummy_data_task",
+    # issue version tasks
+    "plane.bgtasks.issue_version_sync",
+    "plane.bgtasks.issue_description_version_sync",
 )
 
 # Sentry Settings
@@ -358,6 +361,18 @@ ATTACHMENT_MIME_TYPES = [
     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     "text/plain",
     "application/rtf",
+    "application/vnd.oasis.opendocument.spreadsheet",
+    "application/vnd.oasis.opendocument.text",
+    "application/vnd.oasis.opendocument.presentation",
+    "application/vnd.oasis.opendocument.graphics",
+    # Microsoft Visio
+    "application/vnd.visio",
+    # Netpbm format
+    "image/x-portable-graymap",
+    "image/x-portable-bitmap",
+    "image/x-portable-pixmap",
+    # Open Office Bae
+    "application/vnd.oasis.opendocument.database",
     # Audio
     "audio/mpeg",
     "audio/wav",
