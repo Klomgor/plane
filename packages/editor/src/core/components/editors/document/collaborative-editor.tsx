@@ -16,9 +16,11 @@ const CollaborativeDocumentEditor = (props: ICollaborativeDocumentEditor) => {
   const {
     onTransaction,
     aiHandler,
+    bubbleMenuEnabled = true,
     containerClassName,
     disabledExtensions,
     displayConfig = DEFAULT_DISPLAY_CONFIG,
+    editable,
     editorClassName = "",
     embedHandler,
     fileHandler,
@@ -44,8 +46,8 @@ const CollaborativeDocumentEditor = (props: ICollaborativeDocumentEditor) => {
 
   // use document editor
   const { editor, hasServerConnectionFailed, hasServerSynced } = useCollaborativeEditor({
-    onTransaction,
     disabledExtensions,
+    editable,
     editorClassName,
     embedHandler,
     extensions,
@@ -54,6 +56,7 @@ const CollaborativeDocumentEditor = (props: ICollaborativeDocumentEditor) => {
     handleEditorReady,
     id,
     mentionHandler,
+    onTransaction,
     placeholder,
     realtimeConfig,
     serverHandler,
@@ -73,8 +76,9 @@ const CollaborativeDocumentEditor = (props: ICollaborativeDocumentEditor) => {
 
   return (
     <PageRenderer
-      displayConfig={displayConfig}
       aiHandler={aiHandler}
+      bubbleMenuEnabled={bubbleMenuEnabled}
+      displayConfig={displayConfig}
       editor={editor}
       editorContainerClassName={editorContainerClassNames}
       id={id}

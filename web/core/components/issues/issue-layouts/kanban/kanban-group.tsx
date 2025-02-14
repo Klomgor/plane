@@ -5,6 +5,10 @@ import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-scroll/element";
 import { observer } from "mobx-react";
+// plane constants
+import { EIssueLayoutTypes, DRAG_ALLOWED_GROUPS } from "@plane/constants";
+// i18n
+import { useTranslation } from "@plane/i18n";
 //types
 import {
   TGroupedIssues,
@@ -20,7 +24,6 @@ import { KanbanQuickAddIssueButton, QuickAddIssueRoot } from "@/components/issue
 import { highlightIssueOnDrop } from "@/components/issues/issue-layouts/utils";
 import { KanbanIssueBlockLoader } from "@/components/ui";
 // helpers
-import { EIssueLayoutTypes } from "@/constants/issue";
 import { cn } from "@/helpers/common.helper";
 // hooks
 import { useProjectState } from "@/hooks/store";
@@ -56,6 +59,7 @@ interface IKanbanGroup {
   scrollableContainerRef?: MutableRefObject<HTMLDivElement | null>;
   handleOnDrop: (source: GroupDropLocation, destination: GroupDropLocation) => Promise<void>;
   orderBy: TIssueOrderByOptions | undefined;
+  isEpic?: boolean;
 }
 
 export const KanbanGroup = observer((props: IKanbanGroup) => {
@@ -79,7 +83,10 @@ export const KanbanGroup = observer((props: IKanbanGroup) => {
     quickAddCallback,
     scrollableContainerRef,
     handleOnDrop,
+    isEpic = false,
   } = props;
+  // i18n
+  const { t } = useTranslation();
   // hooks
   const projectState = useProjectState();
 
@@ -151,7 +158,7 @@ export const KanbanGroup = observer((props: IKanbanGroup) => {
             dropErrorMessage &&
               setToast({
                 type: TOAST_TYPE.WARNING,
-                title: "Warning!",
+                title: t("common.warning"),
                 message: dropErrorMessage,
               });
             return;
@@ -250,14 +257,17 @@ export const KanbanGroup = observer((props: IKanbanGroup) => {
       className="w-full sticky bottom-0 p-3 text-sm font-medium text-custom-primary-100 hover:text-custom-primary-200 hover:underline cursor-pointer"
       onClick={loadMoreIssuesInThisGroup}
     >
-      {" "}
-      Load More &darr;
+      {t("common.load_more")} &darr;
     </div>
   );
 
   const shouldLoadMore = nextPageResults === undefined ? issueIds?.length < groupIssueCount : !!nextPageResults;
   const canOverlayBeVisible = isWorkflowDropDisabled || orderBy !== "sort_order" || isDropDisabled;
   const shouldOverlayBeVisible = isDraggingOverColumn && canOverlayBeVisible;
+  const canDragIssuesInCurrentGrouping =
+    !!group_by &&
+    DRAG_ALLOWED_GROUPS.includes(group_by) &&
+    (!!sub_group_by ? DRAG_ALLOWED_GROUPS.includes(sub_group_by) : true);
 
   return (
     <div
@@ -277,6 +287,7 @@ export const KanbanGroup = observer((props: IKanbanGroup) => {
         dropErrorMessage={dropErrorMessage}
         orderBy={orderBy}
         isDraggingOverColumn={isDraggingOverColumn}
+        isEpic={isEpic}
       />
       <KanbanIssueBlocksList
         sub_group_id={sub_group_id}
@@ -289,6 +300,8 @@ export const KanbanGroup = observer((props: IKanbanGroup) => {
         canEditProperties={canEditProperties}
         scrollableContainerRef={scrollableContainerRef}
         canDropOverIssue={!canOverlayBeVisible}
+        canDragIssuesInCurrentGrouping={canDragIssuesInCurrentGrouping}
+        isEpic={isEpic}
       />
 
       {shouldLoadMore && (isSubGroup ? <>{loadMore}</> : <KanbanIssueBlockLoader ref={setIntersectionElement} />)}
@@ -302,6 +315,7 @@ export const KanbanGroup = observer((props: IKanbanGroup) => {
               ...(group_by && prePopulateQuickAddData(group_by, sub_group_by, groupId, sub_group_id)),
             }}
             quickAddCallback={quickAddCallback}
+            isEpic={isEpic}
           />
         </div>
       )}
